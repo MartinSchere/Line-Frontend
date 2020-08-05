@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Line",
+    "slug": "Line",
+    "platforms": ["ios", "android", "web"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/Icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#28234A"
+    },
+    "androidStatusBarColor": "#2f2957",
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#2f2957"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false
+    }
+  }
+}
