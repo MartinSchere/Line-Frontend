@@ -6,7 +6,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import colors from "../assets/styling/Colors";
 import PrimaryText from "../assets/styling/PrimaryText";
 
-import { DayInterface } from "../typescript/Interfaces";
 import {
   DayProps,
   DaySelectorProps,

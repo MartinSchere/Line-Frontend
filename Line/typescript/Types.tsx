@@ -25,6 +25,7 @@ export type StoreStackParamList = {
     longitude: number;
     openingTime: string;
     closingTime: string;
+    openingDays: string;
   };
 };
 
@@ -44,9 +45,9 @@ export type LoginProps = {
 };
 
 // AUTH-STACK: REGISTER
-type RegisterNavigationProps = StackNavigationProp<
-  AuthStackParamList,
-  "Register"
+type RegisterNavigationProps = CompositeNavigationProp<
+  StackNavigationProp<AuthStackParamList, "Register">,
+  StackNavigationProp<RootStackParamList, "MisTurnos">
 >;
 
 export type RegisterProps = {

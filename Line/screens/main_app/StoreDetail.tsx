@@ -57,7 +57,7 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
     getUserId();
   }, []);
 
-  const userHasActiveTurns = (data: any): boolean => {
+  const userHasActiveTurns = (data: any /* check type ann. */): boolean => {
     let check = false;
     data.searchStore.properties.turns.map((turn: TurnInterface) => {
       if (turn.user.user.id === userId) {
@@ -108,6 +108,17 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
           <PrimaryText style={styles.scheduleIndicator}>
             {route.params.openingTime.slice(0, 5)} {" - "}
             {route.params.closingTime.slice(0, 5)}
+          </PrimaryText>
+        </View>
+        <View style={styles.schedule}>
+          <Ionicons
+            style={styles.clockIcon}
+            name="md-calendar"
+            size={30}
+            color={colors.iconColor}
+          />
+          <PrimaryText style={styles.scheduleIndicator}>
+            {route.params.openingDays}
           </PrimaryText>
         </View>
         <MapView

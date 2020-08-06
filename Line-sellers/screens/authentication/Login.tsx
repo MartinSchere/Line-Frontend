@@ -52,6 +52,14 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
     { loading: validating, error: validationError, data: returnData },
   ] = useMutation(LOGIN, {
     onError: () => {},
+    onCompleted: (data) => {
+      (async () => {
+        await SecureStore.setItemAsync("LOGIN_TOKEN", data.tokenAuth.token);
+        await SecureStore.setItemAsync("IS_LOGGED", "1").then(() =>
+          navigation.replace("MisTurnos")
+        );
+      })();
+    },
   });
 
   const messageText: string = route.params?.message;
@@ -89,15 +97,6 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
       });
     };
   }, []);
-
-  if (returnData) {
-    (async () => {
-      await SecureStore.setItemAsync("LOGIN_TOKEN", returnData.tokenAuth.token);
-      await SecureStore.setItemAsync("IS_LOGGED", "1").then(() =>
-        navigation.replace("MisTurnos")
-      );
-    })();
-  }
 
   return (
     <View style={styles.container}>

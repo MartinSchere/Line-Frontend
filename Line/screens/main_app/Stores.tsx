@@ -103,6 +103,7 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
                   longitude: item.geometry.coordinates[1],
                   openingTime: item.properties.openingTime,
                   closingTime: item.properties.closingTime,
+                  openingDays: item.properties.openingDays,
                 })
               }
             />

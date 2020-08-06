@@ -15,6 +15,7 @@ interface Store {
   longitude: number;
   openingTime: string;
   closingTime: string;
+  openingDays: string;
   isOpen: boolean;
   turns: TurnInterface[];
   user: AuthUserInterface;

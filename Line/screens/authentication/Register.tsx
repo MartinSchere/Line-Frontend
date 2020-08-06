@@ -1,10 +1,17 @@
 import React, { useState, FunctionComponent, useEffect } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
-import { REGISTER } from "../../graphql/Mutations";
+import { REGISTER, LOGIN } from "../../graphql/Mutations";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { TextInput, View, StyleSheet, Alert, Keyboard } from "react-native";
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Keyboard,
+  AsyncStorage,
+} from "react-native";
+import * as SecureStore from "expo-secure-store";
 
 import colors from "../../assets/styling/colors";
 import PrimaryText from "../../assets/styling/PrimaryText";
@@ -13,10 +20,31 @@ import { Ionicons } from "@expo/vector-icons";
 import { RegisterProps } from "../../typescript/Types";
 
 const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
+  const [login, { loading: logging, data: loggedData }] = useMutation(LOGIN, {
+    onError: () => {},
+  });
   const [
     register,
     { loading: validating, error: validationError, data: returnData },
-  ] = useMutation(REGISTER, { onError: () => {} });
+  ] = useMutation(REGISTER, {
+    onError: () => {},
+    onCompleted: () => {
+      login({ variables: { username, password } });
+      if (loggedData) {
+        (async () => {
+          await SecureStore.setItemAsync(
+            "LOGIN_TOKEN",
+            loggedData.tokenAuth.token
+          );
+          await SecureStore.setItemAsync("IS_LOGGED", "1");
+          await AsyncStorage.setItem(
+            "USER_ID",
+            loggedData.tokenAuth.user.id
+          ).then(() => navigation.replace("MisTurnos"));
+        })();
+      }
+    },
+  });
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -75,11 +103,6 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
       // Reset those, otherwise they'd remain there!
     }
   };
-  if (returnData) {
-    navigation.replace("Login", {
-      message: "User created! Please enter your credentials here",
-    });
-  }
 
   return (
     <View style={styles.container}>
@@ -91,9 +114,7 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
         }
       >
         <PrimaryText
-          style={
-            keyboardActive ? { ...styles.title, display: "none" } : styles.title
-          }
+          style={keyboardActive ? { display: "none" } : styles.title}
         >
           Register
         </PrimaryText>
@@ -151,7 +172,7 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
           }}
         >
           <PrimaryText>
-            {validating ? "REGISTERING..." : "REGISTER"}
+            {validating || logging ? "REGISTERING..." : "REGISTER"}
           </PrimaryText>
         </TouchableOpacity>
         {validationError && (
@@ -251,9 +272,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   title: {
-    color: colors.purple,
+    color: colors.textColor,
+    fontWeight: "700",
     fontSize: 42,
-    marginBottom: 7,
+    marginBottom: 10,
     textAlign: "center",
   },
   invalidMsg: {

@@ -35,6 +35,7 @@ export const GET_STORE_DETAILS = gql`
         openingTime
         closingTime
         isOpen
+        openingDays
         turns {
           user {
             user {

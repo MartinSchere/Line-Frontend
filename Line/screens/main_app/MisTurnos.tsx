@@ -106,6 +106,7 @@ const Turnos: FunctionComponent = () => {
 
   const { loading, error, data, refetch, stopPolling } = useQuery(GET_TURNS, {
     pollInterval: 3000,
+    onError: () => {},
   });
 
   if (!pollingOptions.shouldPoll) {

@@ -55,11 +55,23 @@ const FadeInView: FunctionComponent<FadeInViewProps> = ({
   );
 };
 
-const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
+const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
   const [
     login,
     { loading: validating, error: validationError, data: returnData },
-  ] = useMutation(LOGIN, { onError: () => {} });
+  ] = useMutation(LOGIN, {
+    onError: () => {},
+    onCompleted: (data) => {
+      console.log(data);
+      (async () => {
+        await SecureStore.setItemAsync("LOGIN_TOKEN", data.tokenAuth.token);
+        await SecureStore.setItemAsync("IS_LOGGED", "1");
+        await AsyncStorage.setItem("USER_ID", data.tokenAuth.user.id).then(() =>
+          navigation.replace("MisTurnos")
+        );
+      })();
+    },
+  });
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -100,17 +112,6 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
     }
   };
 
-  if (returnData) {
-    (async () => {
-      await SecureStore.setItemAsync("LOGIN_TOKEN", returnData.tokenAuth.token);
-      await SecureStore.setItemAsync("IS_LOGGED", "1");
-      await AsyncStorage.setItem(
-        "USER_ID",
-        returnData.tokenAuth.user.id
-      ).then(() => navigation.replace("MisTurnos"));
-    })();
-  }
-
   return (
     <View style={styles.container}>
       <View
@@ -120,20 +121,7 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
             : styles.subContainer
         }
       >
-        {route.params?.message && !keyboardActive && (
-          <FadeInView style={styles.notification}>
-            <Ionicons
-              name="md-checkbox"
-              size={45}
-              style={styles.successIcon}
-              color={colors.successColor}
-            />
-            <PrimaryText style={styles.message}>
-              {route.params?.message}
-            </PrimaryText>
-          </FadeInView>
-        )}
-        {!route.params?.message && <Logo style={styles.logo} />}
+        <Logo style={styles.logo} />
         <View style={styles.inputWrapper}>
           <Ionicons
             name="md-person"
