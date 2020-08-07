@@ -73,6 +73,10 @@ export type TurnoProps = {
   title: string;
   queueLength: number;
 };
+type TurnosNavigationProps = StackNavigationProp<RootStackParamList>;
+export type TurnosProps = {
+  navigation: TurnosNavigationProps;
+};
 
 // MAIN-APP-STACK: STORES
 export type StoreProps = {

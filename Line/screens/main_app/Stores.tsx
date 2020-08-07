@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FunctionComponent } from "react";
 
-import { StyleSheet, Text, View, Image, Alert } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import {
   FlatList,
   TouchableOpacity,
@@ -82,6 +82,12 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
               style={{ marginLeft: 5 }}
             />
             <TextInput
+              onTouchStart={() =>
+                Alert.alert(
+                  "Not available",
+                  "The search feature will be implemented in the next release! We apologize the inconvenience"
+                )
+              }
               value={search}
               onChangeText={(search) => setSearch(search)}
               placeholder={"search a store"}

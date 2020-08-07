@@ -1,5 +1,7 @@
 import React, { FunctionComponent, useContext } from "react";
 
+import { PollingOptions } from "../../context/PollingOptions";
+
 import {
   StyleSheet,
   View,
@@ -113,12 +115,20 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
 };
 
 const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
-  const { loading, error, data, refetch } = useQuery(FETCH_UNFULLFILLED_TURNS, {
-    onError: () => {
-      navigation.replace("Login");
-    },
-    pollInterval: 3000,
-  });
+  const { pollingOptions } = useContext(PollingOptions);
+  const { loading, error, data, refetch, stopPolling } = useQuery(
+    FETCH_UNFULLFILLED_TURNS,
+    {
+      onError: () => {
+        navigation.replace("Login");
+      },
+      pollInterval: 3000,
+    }
+  );
+
+  if (!pollingOptions.shouldPoll) {
+    stopPolling(); // Prevent errors on username change
+  }
 
   if (loading) return <Loader />;
 

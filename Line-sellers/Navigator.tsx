@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 
 import Constants from "expo-constants";
 
@@ -26,6 +26,7 @@ import Turnos from "./screens/main-app/MisTurnos";
 import TurnHistory from "./screens/main-app/TurnHistory";
 import Stores from "./screens/main-app/Stores";
 import Header from "./components/Header";
+import { PollingOptions, DefaultValue } from "./context/PollingOptions";
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 const RootStack = createStackNavigator<RootStackParamList>();
@@ -42,40 +43,45 @@ const TurnStackComponent: FunctionComponent = () => {
   );
 };
 const AppStackComponent: FunctionComponent = () => {
+  const [pollingOptions, setPollingOptions] = useState(
+    DefaultValue.pollingOptions
+  );
   return (
-    <AppStack.Navigator
-      tabBarOptions={{
-        showLabel: false,
-        style: { backgroundColor: colors.iceWhite },
-      }}
-    >
-      <AppStack.Screen
-        name="Turnos"
-        component={TurnStackComponent}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name="md-checkbox"
-              size={20}
-              color={focused ? colors.lightBlue : colors.iconColor}
-            />
-          ),
+    <PollingOptions.Provider value={{ pollingOptions, setPollingOptions }}>
+      <AppStack.Navigator
+        tabBarOptions={{
+          showLabel: false,
+          style: { backgroundColor: colors.iceWhite },
         }}
-      />
-      <AppStack.Screen
-        name="Stores"
-        component={Stores}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name="md-basket"
-              size={20}
-              color={focused ? colors.lightBlue : colors.iconColor}
-            />
-          ),
-        }}
-      />
-    </AppStack.Navigator>
+      >
+        <AppStack.Screen
+          name="Turnos"
+          component={TurnStackComponent}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <Ionicons
+                name="md-checkbox"
+                size={20}
+                color={focused ? colors.lightBlue : colors.iconColor}
+              />
+            ),
+          }}
+        />
+        <AppStack.Screen
+          name="Stores"
+          component={Stores}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <Ionicons
+                name="md-basket"
+                size={20}
+                color={focused ? colors.lightBlue : colors.iconColor}
+              />
+            ),
+          }}
+        />
+      </AppStack.Navigator>
+    </PollingOptions.Provider>
   );
 };
 

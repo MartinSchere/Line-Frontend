@@ -148,7 +148,10 @@ export type TurnoProps = {
   userDidNotPresent?: boolean;
 };
 
-type TurnosNavigationProps = StackNavigationProp<TurnStackNavigationParamList>;
+type TurnosNavigationProps = CompositeNavigationProp<
+  StackNavigationProp<TurnStackNavigationParamList>,
+  StackNavigationProp<RootStackParamList>
+>;
 
 export type TurnosProps = {
   navigation: TurnosNavigationProps;

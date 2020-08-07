@@ -16,8 +16,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import * as Permissions from "expo-permissions";
-import { Notifications } from "expo";
 
 import { FlatList } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
@@ -31,7 +29,7 @@ import PrimaryText from "../../assets/styling/PrimaryText";
 import colors from "../../assets/styling/colors";
 
 import { TurnInterface } from "../../typescript/Interfaces";
-import { TurnoProps } from "../../typescript/Types";
+import { TurnoProps, TurnosProps } from "../../typescript/Types";
 
 const Turno: FunctionComponent<TurnoProps> = (props) => {
   const [
@@ -101,12 +99,14 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
   return null;
 };
 
-const Turnos: FunctionComponent = () => {
+const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
   const { pollingOptions } = useContext(PollingOptions);
 
   const { loading, error, data, refetch, stopPolling } = useQuery(GET_TURNS, {
     pollInterval: 3000,
-    onError: () => {},
+    onError: () => {
+      navigation.replace("Login", undefined);
+    },
   });
 
   if (!pollingOptions.shouldPoll) {
