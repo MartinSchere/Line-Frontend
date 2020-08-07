@@ -16,6 +16,7 @@ export const GET_NEARBY_STORES = gql`
         name
         openingTime
         closingTime
+        openingDays
       }
       geometry {
         coordinates
@@ -25,8 +26,8 @@ export const GET_NEARBY_STORES = gql`
 `;
 
 export const GET_STORE_DETAILS = gql`
-  query searchStore($name: String!) {
-    searchStore(name: $name) {
+  query storeDetail($name: String!) {
+    storeDetail(name: $name) {
       geometry {
         coordinates
       }

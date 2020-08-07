@@ -4,6 +4,7 @@ const colors = {
   iceWhite: "#F9FCFF",
   lightBlue: "#6ab7eb",
   warning: "#FF4141",
+  darkerWhite: "#f2f2f2",
   lightGray: "#bdbdbd",
   textColor: "#474545",
   iconColor: "#817A7A",
