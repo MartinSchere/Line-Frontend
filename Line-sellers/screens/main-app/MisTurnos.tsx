@@ -125,6 +125,7 @@ const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
       pollInterval: 3000,
     }
   );
+  console.log(pollingOptions);
 
   if (!pollingOptions.shouldPoll) {
     stopPolling(); // Prevent errors on username change

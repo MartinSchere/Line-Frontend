@@ -15,12 +15,29 @@ const AuthRegisterStore: FunctionComponent<AuthRegisterStoreProps> = ({
   const [
     register,
     { loading: validating, error: validationError, data: returnData },
-  ] = useMutation(REGISTER, { onError: () => {} });
+  ] = useMutation(REGISTER, {
+    onError: () => {},
+    onCompleted: () => {
+      login({
+        variables: {
+          username: route.params.username,
+          password: route.params.password,
+        },
+      });
+    },
+  });
 
-  const [
-    login,
-    { loading: logging, error: loginError, data: logged },
-  ] = useMutation(LOGIN, { onError: () => {} });
+  const [login, { loading: logging }] = useMutation(LOGIN, {
+    onError: () => {},
+    onCompleted: (data) => {
+      (async () => {
+        await SecureStore.setItemAsync("LOGIN_TOKEN", data.tokenAuth.token);
+        await SecureStore.setItemAsync("IS_LOGGED", "1").then(() =>
+          navigation.replace("MisTurnos", undefined)
+        );
+      })();
+    },
+  });
 
   const handleRegistration = () => {
     const variables = {
@@ -53,24 +70,6 @@ const AuthRegisterStore: FunctionComponent<AuthRegisterStoreProps> = ({
     navigation.replace("Register", {
       message: "The name of the store is not available",
     });
-  }
-
-  if (returnData) {
-    login({
-      variables: {
-        username: route.params.username,
-        password: route.params.password,
-      },
-    });
-    console.log(returnData);
-    if (logged) {
-      (async () => {
-        await SecureStore.setItemAsync("LOGIN_TOKEN", logged.tokenAuth.token);
-        await SecureStore.setItemAsync("IS_LOGGED", "1").then(() =>
-          navigation.replace("MisTurnos", undefined)
-        );
-      })();
-    }
   }
 
   return null;

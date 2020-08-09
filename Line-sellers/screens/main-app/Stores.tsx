@@ -1,4 +1,5 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useState, useContext } from "react";
+import { PollingOptions } from "../../context/PollingOptions";
 import * as SecureStore from "expo-secure-store";
 
 import {
@@ -22,9 +23,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { StoresProps } from "../../typescript/Types";
 
 const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
-  const { loading, error, data, stopPolling } = useQuery(GET_STORE, {
+  const { setPollingOptions } = useContext(PollingOptions);
+  const { loading, client, data } = useQuery(GET_STORE, {
     onError: () => {},
-    fetchPolicy: "network-only",
   });
 
   const [
@@ -32,7 +33,22 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
     { loading: validating, data: returnData, error: validationError },
   ] = useMutation(MODIFY_STORE, {
     onError: () => {
-      navigation.replace("Login", undefined);
+      Alert.alert("Error", "This name is not available.");
+    },
+    onCompleted: () => {
+      setPollingOptions({ shouldPoll: false });
+      _handleLogout().then(() => {
+        client.clearStore();
+        Alert.alert(
+          "Name changed successfully",
+          "For security reasons, please log in again with the new credentials.",
+          [
+            {
+              text: "OK",
+            },
+          ]
+        );
+      });
     },
   });
 
@@ -44,31 +60,8 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
 
   const [newUsername, setNewUsername] = useState<string>("");
 
-  if (loading) return <Loader />;
-
-  if (error) {
-    return null;
-  }
-
-  if (validating) {
-    stopPolling();
+  if (validating || loading) {
     return <Loader />;
-  }
-  if (validationError) {
-    Alert.alert("Error", "This username is not available.");
-  }
-
-  if (returnData) {
-    Alert.alert(
-      "Username changed successfully",
-      "For security reasons, please log in again with the new credentials.",
-      [
-        {
-          text: "OK",
-          onPress: () => _handleLogout(),
-        },
-      ]
-    );
   }
 
   return (

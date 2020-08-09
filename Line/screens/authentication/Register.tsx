@@ -22,6 +22,15 @@ import { RegisterProps } from "../../typescript/Types";
 const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
   const [login, { loading: logging, data: loggedData }] = useMutation(LOGIN, {
     onError: () => {},
+    onCompleted: (data) => {
+      (async () => {
+        await SecureStore.setItemAsync("LOGIN_TOKEN", data.tokenAuth.token);
+        await SecureStore.setItemAsync("IS_LOGGED", "1");
+        await AsyncStorage.setItem("USER_ID", data.tokenAuth.user.id).then(() =>
+          navigation.replace("MisTurnos")
+        );
+      })();
+    },
   });
   const [
     register,
@@ -30,19 +39,6 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
     onError: () => {},
     onCompleted: () => {
       login({ variables: { username, password } });
-      if (loggedData) {
-        (async () => {
-          await SecureStore.setItemAsync(
-            "LOGIN_TOKEN",
-            loggedData.tokenAuth.token
-          );
-          await SecureStore.setItemAsync("IS_LOGGED", "1");
-          await AsyncStorage.setItem(
-            "USER_ID",
-            loggedData.tokenAuth.user.id
-          ).then(() => navigation.replace("MisTurnos"));
-        })();
-      }
     },
   });
 

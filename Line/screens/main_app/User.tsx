@@ -25,16 +25,18 @@ const User: FunctionComponent<UserProps> = ({ navigation }) => {
     },
     onCompleted: () => {
       setPollingOptions({ shouldPoll: false });
-      Alert.alert(
-        "Username changed successfully",
-        "For security reasons, please log in again with the new credentials.",
-        [
-          {
-            text: "OK",
-            onPress: () => _handleLogout().then(() => client.clearStore()),
-          },
-        ]
-      );
+      _handleLogout().then(() => {
+        client.clearStore();
+        Alert.alert(
+          "Username changed successfully",
+          "For security reasons, please log in again with the new credentials.",
+          [
+            {
+              text: "OK",
+            },
+          ]
+        );
+      });
     },
   });
 
