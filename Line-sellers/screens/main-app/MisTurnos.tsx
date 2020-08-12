@@ -159,9 +159,11 @@ const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
                 fontSize: 30,
                 fontWeight: "700",
                 color: colors.textColor,
+                textAlign: "center",
+                maxWidth: "80%",
               }}
             >
-              There's nobody in the queue
+              There's nobody in the waitline
             </PrimaryText>
             <PrimaryText
               style={{

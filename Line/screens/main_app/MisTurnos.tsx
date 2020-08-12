@@ -26,7 +26,7 @@ import { CANCEL_TURN } from "../../graphql/Mutations";
 
 import Loader from "../../assets/animations/Loader";
 import PrimaryText from "../../assets/styling/PrimaryText";
-import colors from "../../assets/styling/colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 
 import { TurnInterface } from "../../typescript/Interfaces";
 import { TurnoProps, TurnosProps } from "../../typescript/Types";

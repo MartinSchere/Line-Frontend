@@ -21,7 +21,7 @@ import PrimaryText from "../../assets/styling/PrimaryText";
 import Loader from "../../assets/animations/Loader";
 
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../../assets/styling/colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 import LottieView from "lottie-react-native";
 
 import { TurnInterface } from "../../typescript/Interfaces";
@@ -40,7 +40,6 @@ const parseOpeningDays = (openingDays: string): string => {
     "Saturday",
     "Sunday",
   ];
-  console.log(openingDayList);
   if (openingDayList.length === 7) {
     output = "Open every day";
   } else if (openingDays === "Monday, Tuesday, Wednesday, Thursday, Friday") {
@@ -70,8 +69,8 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
   const [createTurn, { loading: validating, data: returnData }] = useMutation(
     CREATE_TURN,
     {
-      onError: () => {
-        Alert.alert("Error", "You're already in this queue");
+      onError: (e) => {
+        Alert.alert("Error", e.message.replace("GraphQL error:", ""));
       },
     }
   );
@@ -107,7 +106,7 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
   }
 
   const arrowIconSize = 36;
-  const y = 100;
+  const y = 150;
 
   return (
     <View style={styles.container}>
@@ -133,14 +132,11 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
       <Draggable
         disabled={!draggableShouldWork}
         x={0}
-        //renderSize={100}
         maxX={0}
         minX={0}
-        //maxY={}
-        //
         y={y}
-        minY={0}
-        maxY={Dimensions.get("screen").height - y}
+        minY={-(y / 2)}
+        maxY={Dimensions.get("screen").height}
       >
         <View style={styles.content}>
           <PrimaryText style={styles.storeName}>
@@ -158,6 +154,13 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
               {route.params.closingTime.slice(0, 5)}
             </PrimaryText>
           </View>
+          {route.params.averageWaitTime !== null && (
+            <View style={styles.schedule}>
+              <PrimaryText style={styles.scheduleIndicator}>
+                {`Average waiting time: ${route.params.averageWaitTime} minutes`}
+              </PrimaryText>
+            </View>
+          )}
           <View style={styles.dayIndicator}>
             <Ionicons
               style={styles.clockIcon}
@@ -198,7 +201,13 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
               speed={1.5}
             ></LottieView>
           )}
-          {validating && <ActivityIndicator size={40} />}
+          {validating && (
+            <ActivityIndicator
+              style={{ marginTop: 14, paddingTop: 2 }}
+              size={55}
+              color={colors.successColor}
+            />
+          )}
           {data.storeDetail.properties.isOpen &&
             !returnData &&
             !userHasActiveTurns(data) &&
@@ -208,7 +217,9 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
                   {data.storeDetail.properties.turns.length}
                 </PrimaryText>
                 <PrimaryText style={styles.queueCounterDescription}>
-                  People in the queue{" "}
+                  {data.storeDetail.properties.turns.length === 1
+                    ? "Person in the line"
+                    : "People in the line"}
                 </PrimaryText>
                 <TouchableOpacity
                   style={styles.button}
@@ -304,7 +315,7 @@ const styles = StyleSheet.create({
   map: {
     margin: 10,
     zIndex: 999,
-    height: "40%",
+    height: "35%",
     width: "100%",
   },
   image: {

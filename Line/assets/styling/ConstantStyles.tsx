@@ -1,4 +1,4 @@
-const colors = {
+export const colors = {
   purple: "#28234a",
   lightPurple: "",
   iceWhite: "#F9FCFF",
@@ -10,4 +10,16 @@ const colors = {
   iconColor: "#817A7A",
   successColor: "#63F663",
 };
-export default colors;
+
+export const shadows = {
+  lightShadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+};

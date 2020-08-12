@@ -17,6 +17,23 @@ export const GET_NEARBY_STORES = gql`
         openingTime
         closingTime
         openingDays
+        averageWaitTime
+      }
+      geometry {
+        coordinates
+      }
+    }
+  }
+`;
+export const SEARCH_STORE = gql`
+  query searchStore($query: String!, $lat: Float!, $lng: Float!) {
+    searchStore(query: $query, lat: $lat, lng: $lng) {
+      properties {
+        name
+        openingTime
+        closingTime
+        openingDays
+        averageWaitTime
       }
       geometry {
         coordinates

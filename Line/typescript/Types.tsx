@@ -26,6 +26,7 @@ export type StoreStackParamList = {
     openingTime: string;
     closingTime: string;
     openingDays: string;
+    averageWaitTime: string;
   };
 };
 
@@ -64,9 +65,6 @@ export type AuthLoadingProps = {
 };
 
 // MAIN-APP-STACK: LINE
-export type FadeInViewProps = {
-  style?: ViewStyle | ViewStyle[];
-};
 
 export type TurnoProps = {
   turnId: string;

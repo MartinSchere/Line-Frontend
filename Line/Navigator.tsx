@@ -20,7 +20,7 @@ import {
   StoreStackParamList,
 } from "./typescript/Types";
 
-import colors from "./assets/styling/colors";
+import { colors } from "./assets/styling/ConstantStyles";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "./components/Header";
 import { PollingOptions, DefaultValue } from "./context/PollingOptions";

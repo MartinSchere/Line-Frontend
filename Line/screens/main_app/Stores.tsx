@@ -9,9 +9,9 @@ import {
 import * as Location from "expo-location";
 
 import { useQuery, useLazyQuery } from "@apollo/react-hooks";
-import { GET_NEARBY_STORES } from "../../graphql/Queries";
+import { GET_NEARBY_STORES, SEARCH_STORE } from "../../graphql/Queries";
 
-import colors from "../../assets/styling/colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 import PrimaryText from "../../assets/styling/PrimaryText";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../../assets/animations/Loader";
@@ -40,6 +40,10 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
       lng: location?.coords.longitude,
     },
   });
+  const [
+    searchStore,
+    { loading: loadingSearch, data: searchResults, error: searchError },
+  ] = useLazyQuery(SEARCH_STORE);
 
   const [search, setSearch] = useState("");
 
@@ -82,40 +86,58 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
               style={{ marginLeft: 5 }}
             />
             <TextInput
-              onTouchStart={() =>
-                Alert.alert(
-                  "Not available",
-                  "The search feature will be implemented in the next release! We apologize the inconvenience"
-                )
-              }
+              onTouchStart={() => {}}
               value={search}
-              onChangeText={(search) => setSearch(search)}
+              onChangeText={(query) => {
+                setSearch(query),
+                  searchStore({
+                    variables: {
+                      query,
+                      lat: location?.coords.latitude,
+                      lng: location?.coords.longitude,
+                    },
+                  });
+              }}
               placeholder={"search a store"}
               style={styles.input}
               maxLength={35}
             />
           </View>
         </View>
-        <FlatList
-          data={data.nearbyStores}
-          style={styles.storeList}
-          renderItem={({ item }: { item: StoreInterface }) => (
-            <Store
-              title={item.properties.name}
-              onPress={() =>
-                navigation.navigate("StoreDetail", {
-                  name: item.properties.name,
-                  latitude: item.geometry.coordinates[0],
-                  longitude: item.geometry.coordinates[1],
-                  openingTime: item.properties.openingTime,
-                  closingTime: item.properties.closingTime,
-                  openingDays: item.properties.openingDays,
-                })
-              }
-            />
-          )}
-          keyExtractor={(_store, index) => String(index)}
-        ></FlatList>
+        {loadingSearch ? (
+          <Loader />
+        ) : (
+          <FlatList
+            data={search ? searchResults?.searchStore : data.nearbyStores}
+            style={styles.storeList}
+            contentContainerStyle={{ flex: 1 }}
+            renderItem={({ item }: { item: StoreInterface }) => (
+              <Store
+                title={item.properties.name}
+                onPress={() => {
+                  console.log(item.properties);
+                  navigation.navigate("StoreDetail", {
+                    name: item.properties.name,
+                    latitude: item.geometry.coordinates[1],
+                    longitude: item.geometry.coordinates[0],
+                    openingTime: item.properties.openingTime,
+                    closingTime: item.properties.closingTime,
+                    openingDays: item.properties.openingDays,
+                    averageWaitTime: item.properties.averageWaitTime,
+                  });
+                }}
+              />
+            )}
+            keyExtractor={(_store, index) => index.toString()}
+            ListEmptyComponent={() => (
+              <View style={styles.listEmptyContainer}>
+                <PrimaryText style={styles.searchFailed}>
+                  We couldn't find any store near you
+                </PrimaryText>
+              </View>
+            )}
+          ></FlatList>
+        )}
       </View>
     );
   }
@@ -131,9 +153,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   storeCard: {
-    flexBasis: "47%",
+    //width:100
+    justifyContent: "center",
     flexGrow: 0,
-    padding: 20,
+    padding: 35,
     margin: 5,
     borderRadius: 15,
     flex: 1,
@@ -150,6 +173,19 @@ const styles = StyleSheet.create({
   },
   storeName: {
     fontSize: 20,
+  },
+  listEmptyContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    flexGrow: 1,
+    width: "80%",
+  },
+  searchFailed: {
+    fontWeight: "700",
+    textAlign: "center",
+    fontSize: 20,
+    color: colors.iconColor,
   },
   topContainer: {
     flexDirection: "row",

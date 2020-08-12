@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
-import colors from "../../assets/styling/colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 import PrimaryText from "../../assets/styling/PrimaryText";
 import { Ionicons } from "@expo/vector-icons";
 

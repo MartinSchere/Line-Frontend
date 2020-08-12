@@ -134,7 +134,7 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
           <TextInput
             value={username}
             onChangeText={(username) => setUsername(username)}
-            placeholder={"Nombre del negocio"}
+            placeholder={"Name of the store"}
             style={styles.input}
             maxLength={20}
           />
@@ -149,7 +149,7 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
           <TextInput
             value={password}
             onChangeText={(password) => setPassword(password)}
-            placeholder={"Contraseña"}
+            placeholder={"Password"}
             secureTextEntry={true}
             style={styles.input}
             maxLength={20}

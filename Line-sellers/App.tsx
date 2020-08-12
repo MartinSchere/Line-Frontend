@@ -12,9 +12,9 @@ import { setContext } from "apollo-link-context";
 import RootStackNavigator from "./Navigator";
 
 const httpLink = createHttpLink({
-  uri: "https://line-graphql-api.herokuapp.com/graphql/",
+  uri: "http:/192.168.0.23:8000/graphql/", //https://line-graphql-api.herokuapp.com/graphql/
 });
-
+//http:/192.168.0.23:8000/graphql/
 export default function App() {
   const [token, setToken] = useState("");
 

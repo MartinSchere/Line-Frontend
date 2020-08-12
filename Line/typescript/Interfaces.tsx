@@ -18,6 +18,7 @@ interface Store {
   openingDays: string;
   isOpen: boolean;
   turns: TurnInterface[];
+  averageWaitTime: string;
   user: AuthUserInterface;
 }
 interface geometry {

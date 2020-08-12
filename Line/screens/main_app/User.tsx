@@ -12,7 +12,7 @@ import { MODIFY_USER } from "../../graphql/Mutations";
 import Loader from "../../assets/animations/Loader";
 import PrimaryText from "../../assets/styling/PrimaryText";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../../assets/styling/colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 
 import { UserProps } from "../../typescript/Types";
 

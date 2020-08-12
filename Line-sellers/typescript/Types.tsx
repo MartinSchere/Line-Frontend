@@ -6,7 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 //Stacks
 export type RootStackParamList = {
   MisTurnos: undefined;
-  Login: { message: string } | undefined;
+  Login: undefined | { message: string };
   AuthLoading: undefined;
 };
 export type AuthStackParamList = {

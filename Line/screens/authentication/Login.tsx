@@ -1,13 +1,13 @@
-import React, { useState, useEffect, FunctionComponent } from "react";
+import React, { useState, useEffect, FunctionComponent, useRef } from "react";
 import * as SecureStore from "expo-secure-store";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { StackNavigationProp } from "@react-navigation/stack";
+
+import { Shake } from "react-native-motion";
 
 import { useMutation } from "@apollo/react-hooks";
 import { LOGIN } from "../../graphql/Mutations";
 
 import {
-  Animated,
   TextInput,
   View,
   StyleSheet,
@@ -16,51 +16,18 @@ import {
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../../assets/styling/colors";
+import { colors, shadows } from "../../assets/styling/ConstantStyles";
 import PrimaryText from "../../assets/styling/PrimaryText";
 import Logo from "../../assets/Logo";
 
-import { FadeInViewProps, LoginProps } from "../../typescript/Types";
-
-const FadeInView: FunctionComponent<FadeInViewProps> = ({
-  children,
-  style,
-}) => {
-  const [fadeAnim] = useState(new Animated.Value(0)); // Initial value for opacity: 0
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-    }).start();
-  }, []);
-
-  const passedStyles = Array.isArray(style)
-    ? Object.assign({}, ...style)
-    : style;
-
-  return (
-    <Animated.View // Special animatable View
-      style={[
-        {
-          ...passedStyles,
-        },
-        {
-          opacity: fadeAnim, // Bind opacity to animated value
-        },
-      ]}
-    >
-      {children}
-    </Animated.View>
-  );
-};
+import { LoginProps } from "../../typescript/Types";
 
 const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
   const [
     login,
     { loading: validating, error: validationError, data: returnData },
   ] = useMutation(LOGIN, {
-    onError: () => {},
+    onError: () => startAnimation(),
     onCompleted: (data) => {
       console.log(data);
       (async () => {
@@ -78,7 +45,12 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
 
   const [keyboardActive, setKeyboardActive] = useState(false);
 
-  const [frontendValidationError, setfrontendValidationError] = useState(false);
+  const [disableLogin, setDisableLogin] = useState(true);
+  const [animationValue, setAnimationValue] = useState(0);
+
+  const startAnimation = () => {
+    setAnimationValue((prevState) => prevState + 1);
+  };
 
   useEffect(() => {
     Keyboard.addListener("keyboardDidShow", () => {
@@ -99,16 +71,11 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
     };
   }, []);
 
-  const validateLogin = (username: string, password: string): void => {
-    if (password.length < 5) {
-      setfrontendValidationError(true);
+  const validateLogin = (): void => {
+    if (password.length > 5 && username.length > 1) {
+      setDisableLogin(false);
     } else {
-      login({
-        variables: {
-          username,
-          password,
-        },
-      });
+      setDisableLogin(true);
     }
   };
 
@@ -122,70 +89,80 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
         }
       >
         <Logo style={styles.logo} />
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="md-person"
-            size={24}
-            style={styles.inputIcon}
-            color={colors.lightGray}
-          />
-          <TextInput
-            value={username}
-            onChangeText={(username) => setUsername(username)}
-            autoCompleteType={"username"}
-            placeholder={"Username"}
-            maxLength={20}
-            style={styles.input}
-          />
-        </View>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="md-lock"
-            size={24}
-            style={styles.inputIcon}
-            color={colors.lightGray}
-          />
-          <TextInput
-            value={password}
-            onChangeText={(password) => setPassword(password)}
-            placeholder={"Password"}
-            secureTextEntry={true}
-            maxLength={20}
-            autoCompleteType={"password"}
-            style={styles.input}
-          />
-        </View>
+        <Shake value={animationValue} type="timing" useNativeDriver={true}>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="md-person"
+              size={24}
+              style={styles.inputIcon}
+              color={colors.lightGray}
+            />
+            <TextInput
+              value={username}
+              onChangeText={(username) => {
+                setUsername(username);
+                validateLogin();
+              }}
+              autoCompleteType={"username"}
+              placeholder={"Username"}
+              maxLength={20}
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="md-lock"
+              size={24}
+              style={styles.inputIcon}
+              color={colors.lightGray}
+            />
+            <TextInput
+              value={password}
+              onChangeText={(password) => {
+                setPassword(password);
+                validateLogin();
+              }}
+              placeholder={"Password"}
+              secureTextEntry={true}
+              maxLength={20}
+              autoCompleteType={"password"}
+              style={styles.input}
+            />
+          </View>
+        </Shake>
 
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => validateLogin(username, password)}
+          style={
+            disableLogin || validating ? styles.buttonDisabled : styles.button
+          }
+          onPress={() => {
+            login({
+              variables: {
+                username,
+                password,
+              },
+            });
+          }}
+          disabled={disableLogin}
         >
-          <PrimaryText>{validating ? "Logging in..." : "LOGIN"}</PrimaryText>
-        </TouchableOpacity>
-        <View style={styles.register}>
-          <PrimaryText style={styles.registerLink}>
-            Don't have an account?
+          <PrimaryText style={{ color: "white" }} variant={"bold"}>
+            {validating ? "Logging in..." : "LOG IN"}
           </PrimaryText>
+        </TouchableOpacity>
+
+        <View style={styles.register}>
           <TouchableOpacity
             style={styles.registerTouchable}
             onPress={() => navigation.navigate("Register")}
           >
-            <PrimaryText style={styles.registerLinkUnderlined}>
-              Sign up
+            <PrimaryText style={styles.registerLinkUnderlined} variant={"bold"}>
+              Create an account
             </PrimaryText>
           </TouchableOpacity>
         </View>
         <View
-          style={
-            validationError || frontendValidationError
-              ? styles.errorTextActive
-              : styles.errorText
-          }
-        >
-          <PrimaryText style={styles.invalidMsg}>
-            Please enter valid credentials
-          </PrimaryText>
-        </View>
+          style={validationError ? styles.errorTextActive : styles.errorText}
+        ></View>
       </View>
     </View>
   );
@@ -196,26 +173,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.purple,
   },
   subContainer: {
     flex: 0.7,
     width: "90%",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
-    backgroundColor: colors.iceWhite,
-    borderColor: colors.purple,
-    borderRadius: 15,
+    backgroundColor: "white",
+    borderRadius: 5,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
-
-    elevation: 8,
+    elevation: 5,
   },
   logo: {
     width: "30%",
@@ -224,49 +197,45 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.iceWhite,
+    backgroundColor: colors.darkerWhite,
     paddingLeft: 10,
     paddingRight: 10,
     padding: 5,
     margin: 5,
     marginBottom: 10,
-    shadowColor: "#000",
-    borderRadius: 25,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 5,
   },
   input: {
     width: 200,
     height: 44,
     padding: 10,
-    borderColor: colors.iceWhite,
-    backgroundColor: colors.iceWhite,
-    borderRadius: 10,
+    borderColor: "white",
+    backgroundColor: colors.darkerWhite,
   },
   inputIcon: {
     marginLeft: 7,
   },
   button: {
-    backgroundColor: colors.iceWhite,
-    padding: 10,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: colors.purple,
+    width: 200,
+    alignItems: "center",
+    marginTop: 10,
+    padding: 12.5,
+    borderRadius: 25,
+  },
+  buttonDisabled: {
+    backgroundColor: colors.lightGray,
+    width: 200,
+    alignItems: "center",
+    marginTop: 10,
+    padding: 12.5,
+    borderRadius: 20,
   },
   register: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    padding: 25,
   },
   registerTouchable: {},
   notification: {
@@ -275,14 +244,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.iceWhite,
     padding: 3,
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...shadows.lightShadow,
   },
   welcomeMsg: {
     fontWeight: "700",
@@ -302,15 +264,14 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   registerLink: {
-    marginTop: 10,
     color: colors.textColor,
     margin: 5,
   },
   registerLinkUnderlined: {
     color: colors.purple,
-    fontWeight: "700",
     textDecorationLine: "underline",
-    marginTop: 7,
+    opacity: 0.8,
+    marginTop: 15,
   },
   successIcon: {
     marginTop: 10,

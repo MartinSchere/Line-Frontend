@@ -2,7 +2,7 @@ import React from "react";
 import Constants from "expo-constants";
 import { View } from "react-native";
 
-import colors from "../assets/styling/colors";
+import colors from "../assets/styling/ConstantStyles";
 import Logo from "../assets/Logo";
 
 const Header = () => {

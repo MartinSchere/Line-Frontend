@@ -7,6 +7,7 @@ export const GET_STORE = gql`
         name
         openingTime
         closingTime
+        averageWaitTime
       }
     }
   }

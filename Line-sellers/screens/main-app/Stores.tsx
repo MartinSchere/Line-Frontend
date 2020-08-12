@@ -24,13 +24,13 @@ import { StoresProps } from "../../typescript/Types";
 
 const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
   const { setPollingOptions } = useContext(PollingOptions);
-  const { loading, client, data } = useQuery(GET_STORE, {
+  const { loading, client, error, data } = useQuery(GET_STORE, {
     onError: () => {},
   });
 
   const [
     modifyStore,
-    { loading: validating, data: returnData, error: validationError },
+    { loading: validating, error: validationError },
   ] = useMutation(MODIFY_STORE, {
     onError: () => {
       Alert.alert("Error", "This name is not available.");
@@ -63,6 +63,10 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
   if (validating || loading) {
     return <Loader />;
   }
+  if (error) {
+    navigation.replace("Login", undefined);
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -86,6 +90,13 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
           onChangeText={(text) => setNewUsername(text)}
           maxLength={20}
         ></TextInput>
+        {data.store.properties.averageWaitTime && (
+          <PrimaryText
+            style={{ marginTop: 15, fontSize: 20, color: colors.iconColor }}
+          >
+            {`Average wait time: ${data.store.properties.averageWaitTime} minutes`}
+          </PrimaryText>
+        )}
       </View>
       <View style={styles.saveButtonWrapper}>
         {!validating &&
