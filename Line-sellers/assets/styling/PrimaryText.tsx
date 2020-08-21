@@ -3,18 +3,27 @@ import { Text, TextStyle } from "react-native";
 
 import { AppLoading } from "expo";
 
-import { useFonts, Montserrat_500Medium } from "@expo-google-fonts/montserrat";
+import {
+  useFonts,
+  Montserrat_500Medium,
+  Montserrat_800ExtraBold,
+} from "@expo-google-fonts/montserrat";
+
+import { colors } from "./ConstantStyles";
 
 type CustomTextProps = {
   style?: TextStyle | TextStyle[];
+  variant?: string;
 };
 
 const PrimaryText: FunctionComponent<CustomTextProps> = ({
   children,
   style,
+  variant,
 }) => {
   let [fontsLoaded] = useFonts({
     Montserrat_500Medium,
+    Montserrat_800ExtraBold,
   });
 
   const passedStyles = Array.isArray(style)
@@ -28,7 +37,10 @@ const PrimaryText: FunctionComponent<CustomTextProps> = ({
       <Text
         style={[
           {
-            fontFamily: "Montserrat_500Medium",
+            fontFamily:
+              variant === "bold"
+                ? "Montserrat_800ExtraBold"
+                : "Montserrat_500Medium",
           },
           { ...passedStyles },
         ]}

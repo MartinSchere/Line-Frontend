@@ -3,7 +3,7 @@ import React, { Component, FunctionComponent } from "react";
 import { View, Text, StyleSheet, Button, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import colors from "../assets/styling/Colors";
+import { colors } from "../assets/styling/ConstantStyles";
 import PrimaryText from "../assets/styling/PrimaryText";
 
 import {
@@ -18,7 +18,12 @@ const Day: FunctionComponent<DayProps> = (props) => {
       onPress={props.onPress}
       style={props.selected ? styles.buttonActive : styles.button}
     >
-      <PrimaryText>{props.day}</PrimaryText>
+      <PrimaryText
+        variant={"bold"}
+        style={{ color: props.selected ? "white" : colors.iconColor }}
+      >
+        {props.day}
+      </PrimaryText>
     </TouchableOpacity>
   );
 };

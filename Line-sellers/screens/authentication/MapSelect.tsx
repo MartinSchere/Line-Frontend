@@ -8,7 +8,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Loader from "../../assets/animations/Loader";
 import { Ionicons } from "@expo/vector-icons";
 import PrimaryText from "../../assets/styling/PrimaryText";
-import colors from "../../assets/styling/Colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 
 import { MapSelectLocationStoreProps } from "../../typescript/Types";
 
@@ -61,7 +61,7 @@ const MapSelectLocation: FunctionComponent<MapSelectLocationStoreProps> = ({
       );
   };
 
-  const prettifyAdress = (adress) => {
+  const prettifyAdress = (adress: Location.LocationData): string => {
     if (adress) {
       let output = "";
       const object = adress[0];
@@ -144,7 +144,9 @@ const MapSelectLocation: FunctionComponent<MapSelectLocationStoreProps> = ({
                 })
               }
             >
-              <PrimaryText style={styles.nextBtnText}>NEXT</PrimaryText>
+              <PrimaryText style={styles.nextBtnText} variant={"bold"}>
+                NEXT
+              </PrimaryText>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.buttonDisabled} disabled={true}>

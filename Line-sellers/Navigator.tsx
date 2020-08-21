@@ -13,7 +13,7 @@ import ScheduleSelect from "./screens/authentication/ScheduleSelect";
 import AuthRegisterStore from "./screens/authentication/AuthRegisterStore";
 import AuthLoadingScreen from "./screens/authentication/AuthLoading";
 
-import colors from "./assets/styling/Colors";
+import { colors } from "./assets/styling/ConstantStyles";
 import { Ionicons } from "@expo/vector-icons";
 
 import {

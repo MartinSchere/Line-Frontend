@@ -1,4 +1,9 @@
-import React, { useState, useEffect, FunctionComponent } from "react";
+import React, {
+  useState,
+  useEffect,
+  FunctionComponent,
+  useContext,
+} from "react";
 
 import { StyleSheet, View, Alert } from "react-native";
 import {
@@ -18,6 +23,7 @@ import Loader from "../../assets/animations/Loader";
 
 import { StoreProps, StoresProps } from "../../typescript/Types";
 import { StoreInterface } from "../../typescript/Interfaces";
+import { HeaderOptions } from "../../context/HeaderOptions";
 
 const Store: FunctionComponent<StoreProps> = (props) => {
   return (
@@ -77,7 +83,9 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
     return (
       <View style={styles.container}>
         <View style={styles.topContainer}>
-          <PrimaryText style={styles.title}>Nearby stores</PrimaryText>
+          <PrimaryText style={styles.title} variant={"bold"}>
+            Nearby stores
+          </PrimaryText>
           <View style={styles.inputWrapper}>
             <Ionicons
               name="md-search"
@@ -194,7 +202,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "700",
     color: colors.textColor,
     margin: 12.5,
   },

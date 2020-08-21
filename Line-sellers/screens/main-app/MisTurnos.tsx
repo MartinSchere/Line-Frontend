@@ -22,7 +22,7 @@ import { FETCH_UNFULLFILLED_TURNS } from "../../graphql/Queries";
 
 import { Ionicons } from "@expo/vector-icons";
 import PrimaryText from "../../assets/styling/PrimaryText";
-import colors from "../../assets/styling/Colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 import Loader from "../../assets/animations/Loader";
 
 import { TurnInterface } from "../../typescript/Interfaces";
@@ -70,7 +70,9 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
           <PrimaryText style={{ fontSize: 24 }}>
             {props.userFullName}
           </PrimaryText>
-          <PrimaryText>Created at {props.creationTime.slice(0, 5)}</PrimaryText>
+          <PrimaryText variant={"bold"}>
+            Created at {props.creationTime.slice(0, 5)}
+          </PrimaryText>
         </View>
         {!loadingCancel && !loadingFullfill && !loadingUserDidNotPresent && (
           <View style={styles.turnOptions}>
@@ -98,14 +100,14 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
               onPress={() => userDidNotPresent()}
               style={styles.iconHolder}
             >
-              <Ionicons name="md-help" size={40} color={colors.yellow} />
+              <Ionicons name="md-help" size={40} color={"yellow"} />
             </TouchableOpacity>
           </View>
         )}
         {(loadingCancel || loadingFullfill || loadingUserDidNotPresent) && (
           <ActivityIndicator
             size={40}
-            color={colors.primary}
+            color={colors.warning}
             style={styles.turnCancelLoader}
           />
         )}
@@ -120,7 +122,7 @@ const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
     FETCH_UNFULLFILLED_TURNS,
     {
       onError: () => {
-        navigation.replace("Login");
+        navigation.replace("Login", undefined);
       },
       pollInterval: 3000,
     }
@@ -157,20 +159,20 @@ const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
             <PrimaryText
               style={{
                 fontSize: 30,
-                fontWeight: "700",
                 color: colors.textColor,
                 textAlign: "center",
                 maxWidth: "80%",
               }}
+              variant={"bold"}
             >
               There's nobody in the waitline
             </PrimaryText>
             <PrimaryText
               style={{
                 fontSize: 14,
-                fontWeight: "700",
                 color: colors.iconColor,
               }}
+              variant={"bold"}
             >
               swipe down to refresh
             </PrimaryText>
@@ -194,7 +196,7 @@ const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
           style={styles.button}
           onPress={() => navigation.navigate("TurnHistory")}
         >
-          <PrimaryText style={{ color: colors.iceWhite }}>
+          <PrimaryText style={{ color: colors.iceWhite }} variant={"bold"}>
             See user history
           </PrimaryText>
         </TouchableOpacity>

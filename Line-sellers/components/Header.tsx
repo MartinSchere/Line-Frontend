@@ -2,7 +2,7 @@ import React from "react";
 import Constants from "expo-constants";
 import { View } from "react-native";
 
-import colors from "../assets/styling/Colors";
+import { colors } from "../assets/styling/ConstantStyles";
 import Logo from "../assets/Logo";
 
 const Header = () => {
@@ -11,14 +11,15 @@ const Header = () => {
       style={{
         marginTop: Constants.statusBarHeight,
         flex: 1,
-        backgroundColor: colors.purple,
+        backgroundColor: "white",
         alignItems: "flex-start",
+        justifyContent: "center",
         position: "relative",
       }}
     >
       <Logo
         style={{
-          height: "100%",
+          height: "60%",
           width: "100%",
         }}
       />

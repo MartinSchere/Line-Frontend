@@ -1,20 +1,16 @@
 {
   "expo": {
-    "name": "Line",
-    "slug": "Line",
+    "name": "WaitLine",
+    "slug": "WaitLine",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
+    "description": "Waitline is a queue system that revolutionizes customer service. With WaitLine, there's no more waiting on a queue forever: Just join it virtually!",
     "orientation": "portrait",
     "icon": "./assets/images/Icon.png",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/splash-wl.png",
       "resizeMode": "contain",
-      "backgroundColor": "#28234A"
-    },
-    "androidStatusBarColor": "#2f2957",
-    "androidStatusBar": {
-      "barStyle": "light-content",
-      "backgroundColor": "#2f2957"
+      "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

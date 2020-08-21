@@ -23,7 +23,8 @@ import {
 import { colors } from "./assets/styling/ConstantStyles";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "./components/Header";
-import { PollingOptions, DefaultValue } from "./context/PollingOptions";
+import { PollingOptions, InitialPolling } from "./context/PollingOptions";
+import { InitialHeader, HeaderOptions } from "./context/HeaderOptions";
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 const RootStack = createStackNavigator<RootStackParamList>();
@@ -50,7 +51,7 @@ const StoreStackComponent: FunctionComponent = () => {
 };
 const AppStackComponent: FunctionComponent = () => {
   const [pollingOptions, setPollingOptions] = useState(
-    DefaultValue.pollingOptions
+    InitialPolling.pollingOptions
   );
   return (
     // Provider
@@ -58,7 +59,7 @@ const AppStackComponent: FunctionComponent = () => {
       <AppStack.Navigator
         tabBarOptions={{
           showLabel: false,
-          style: { backgroundColor: colors.iceWhite },
+          style: { backgroundColor: "white" },
         }}
       >
         <AppStack.Screen
@@ -123,31 +124,38 @@ const AuthStackComponent: FunctionComponent = () => {
 };
 
 const RootStackComponent: FunctionComponent = () => {
+  const [headerOptions, setHeaderOptions] = useState(
+    InitialHeader.headerOptions
+  );
   return (
     <NavigationContainer>
-      <RootStack.Navigator initialRouteName="AuthLoading">
-        <RootStack.Screen
-          name="MisTurnos"
-          component={AppStackComponent}
-          options={{
-            headerStyle: {
-              height: Constants.statusBarHeight * 3.25,
-            },
-            headerBackground: () => <Header />,
-            headerTitle: "",
-          }}
-        />
-        <RootStack.Screen
-          name="Login"
-          component={AuthStackComponent}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name="AuthLoading"
-          component={AuthLoadingScreen}
-          options={{ headerShown: false }}
-        />
-      </RootStack.Navigator>
+      <HeaderOptions.Provider value={{ headerOptions, setHeaderOptions }}>
+        <RootStack.Navigator initialRouteName="AuthLoading">
+          <RootStack.Screen
+            name="MisTurnos"
+            component={AppStackComponent}
+            options={{
+              headerStyle: {
+                height: Constants.statusBarHeight * 3.25,
+              },
+              headerBackground: () => <Header />,
+              headerTitle: "",
+              headerShown: headerOptions.showHeader,
+            }}
+          />
+
+          <RootStack.Screen
+            name="Login"
+            component={AuthStackComponent}
+            options={{ headerShown: false }}
+          />
+          <RootStack.Screen
+            name="AuthLoading"
+            component={AuthLoadingScreen}
+            options={{ headerShown: false }}
+          />
+        </RootStack.Navigator>
+      </HeaderOptions.Provider>
     </NavigationContainer>
   );
 };

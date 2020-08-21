@@ -1,11 +1,17 @@
 import React, { useState, FunctionComponent, useEffect } from "react";
 
-import { TextInput, View, StyleSheet, Keyboard } from "react-native";
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Keyboard,
+  ImageBackground,
+} from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { Ionicons } from "@expo/vector-icons";
 import PrimaryText from "../../assets/styling/PrimaryText";
-import colors from "../../assets/styling/Colors";
+import { colors, shadows } from "../../assets/styling/ConstantStyles";
 
 import { RegisterProps } from "../../typescript/Types";
 
@@ -14,25 +20,18 @@ const Register: FunctionComponent<RegisterProps> = ({ route, navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [passwordDoesNotMatchError, setpasswordDoesNotMatchError] = useState(
-    false
-  );
-  const [passwordTooShortError, setpasswordTooShortError] = useState(false);
+  const [disableRegister, setDisableRegister] = useState(true);
 
   const [keyboardActive, setKeyboardActive] = useState(false);
 
-  const validateData = () => {
-    if (password !== confirmPassword) {
-      setpasswordDoesNotMatchError(true);
-    } else if (password.length < 8) {
-      setpasswordTooShortError(true);
+  const validateData = (): void => {
+    if (username.length < 5 || password.length < 8) {
+      setDisableRegister(true);
     } else {
-      navigation.navigate("MapSelectLocation", {
-        username,
-        password,
-      });
+      setDisableRegister(false);
     }
   };
+
   useEffect(() => {
     Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardActive(true);
@@ -53,7 +52,10 @@ const Register: FunctionComponent<RegisterProps> = ({ route, navigation }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      style={styles.container}
+      source={require("../../assets/images/LoginBackground2.png")}
+    >
       <View
         style={
           keyboardActive
@@ -63,8 +65,11 @@ const Register: FunctionComponent<RegisterProps> = ({ route, navigation }) => {
       >
         <PrimaryText
           style={
-            keyboardActive ? { ...styles.title, display: "none" } : styles.title
+            keyboardActive
+              ? { ...styles.title, fontSize: 34, maxWidth: "90%" }
+              : styles.title
           }
+          variant={"bold"}
         >
           Register your store
         </PrimaryText>
@@ -77,7 +82,10 @@ const Register: FunctionComponent<RegisterProps> = ({ route, navigation }) => {
           />
           <TextInput
             value={username}
-            onChangeText={(username) => setUsername(username)}
+            onChangeText={(username) => {
+              setUsername(username);
+              validateData();
+            }}
             placeholder={"Name of the store"}
             style={styles.input}
             maxLength={20}
@@ -92,8 +100,14 @@ const Register: FunctionComponent<RegisterProps> = ({ route, navigation }) => {
           />
           <TextInput
             value={password}
-            onChangeText={(password) => setPassword(password)}
-            placeholder={"Create a password"}
+            onChangeText={(password) => {
+              setPassword(password);
+              validateData();
+              password === confirmPassword
+                ? setDisableRegister(false)
+                : setDisableRegister(true);
+            }}
+            placeholder={"Password"}
             secureTextEntry={true}
             style={styles.input}
             maxLength={20}
@@ -108,35 +122,42 @@ const Register: FunctionComponent<RegisterProps> = ({ route, navigation }) => {
           />
           <TextInput
             value={confirmPassword}
-            onChangeText={(confirmPassword) =>
-              setConfirmPassword(confirmPassword)
-            }
-            placeholder={"Confirm the password"}
+            onChangeText={(text) => {
+              setConfirmPassword(text);
+              text === password
+                ? setDisableRegister(false)
+                : setDisableRegister(true);
+            }}
+            placeholder={"Confirm password"}
             secureTextEntry={true}
             style={styles.input}
             maxLength={20}
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => validateData()}>
-          <PrimaryText>NEXT</PrimaryText>
+        <TouchableOpacity
+          disabled={disableRegister}
+          style={disableRegister ? styles.buttonDisabled : styles.button}
+          onPress={() =>
+            navigation.navigate("MapSelectLocation", {
+              username,
+              password,
+            })
+          }
+        >
+          <PrimaryText
+            style={{ color: "white", letterSpacing: 1.2 }}
+            variant={"bold"}
+          >
+            NEXT
+          </PrimaryText>
         </TouchableOpacity>
         {route.params?.message && (
-          <PrimaryText style={styles.message}>
+          <PrimaryText style={styles.message} variant={"bold"}>
             {route.params?.message}
           </PrimaryText>
         )}
-        {passwordDoesNotMatchError && (
-          <PrimaryText style={styles.errorMsg}>
-            Passwords don't match
-          </PrimaryText>
-        )}
-        {passwordTooShortError && (
-          <PrimaryText style={styles.errorMsg}>
-            Password must have at least 8 characters
-          </PrimaryText>
-        )}
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -145,84 +166,67 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.purple,
+    backgroundColor: "white",
   },
   subContainer: {
     flex: 0.7,
     width: "90%",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
-    backgroundColor: colors.iceWhite,
-    borderColor: colors.purple,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-
-    elevation: 8,
+    backgroundColor: "white",
+    borderRadius: 5,
+    ...shadows.lightShadow,
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.iceWhite,
+    backgroundColor: colors.darkerWhite,
     paddingLeft: 10,
     paddingRight: 10,
     padding: 5,
     margin: 5,
     marginBottom: 10,
-    shadowColor: "#000",
-    borderRadius: 25,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  title: {
-    color: colors.purple,
-    fontSize: 32,
-    marginBottom: 7,
-    textAlign: "center",
+    borderRadius: 5,
   },
   input: {
     width: 200,
     height: 44,
     padding: 10,
-    borderColor: colors.iceWhite,
-    backgroundColor: colors.iceWhite,
+    borderColor: "white",
+    backgroundColor: colors.darkerWhite,
   },
   inputIcon: {
     marginLeft: 3,
     marginBottom: 1,
   },
   button: {
-    backgroundColor: colors.iceWhite,
+    backgroundColor: colors.purple,
+    width: 200,
+    alignItems: "center",
     marginTop: 10,
-    padding: 10,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    padding: 12.5,
+    borderRadius: 25,
   },
+  buttonDisabled: {
+    backgroundColor: colors.lightGray,
+    width: 200,
+    alignItems: "center",
+    marginTop: 10,
+    padding: 12.5,
+    borderRadius: 20,
+  },
+  title: {
+    color: colors.purple,
+    fontSize: 38,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+
   message: {
-    color: colors.textColor,
-    padding: 15,
-  },
-  errorMsg: {
-    color: colors.textColor,
-    margin: 5,
+    color: colors.warning,
+    textAlign: "center",
+    margin: "2.5%",
+    paddingTop: 15,
   },
 });
 export default Register;

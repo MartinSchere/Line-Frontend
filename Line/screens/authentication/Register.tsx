@@ -10,10 +10,12 @@ import {
   StyleSheet,
   Keyboard,
   AsyncStorage,
+  ImageBackground,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
-import { colors } from "../../assets/styling/ConstantStyles";
+import { Shake } from "react-native-motion";
+import { colors, shadows } from "../../assets/styling/ConstantStyles";
 import PrimaryText from "../../assets/styling/PrimaryText";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -36,7 +38,7 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
     register,
     { loading: validating, error: validationError, data: returnData },
   ] = useMutation(REGISTER, {
-    onError: () => {},
+    onError: () => startAnimation(),
     onCompleted: () => {
       login({ variables: { username, password } });
     },
@@ -48,11 +50,8 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
 
   const [keyboardActive, setKeyboardActive] = useState(false);
 
-  const [passwordDoesNotMatchError, setpasswordDoesNotMatchError] = useState(
-    false
-  );
-  const [passwordTooShortError, setpasswordTooShortError] = useState(false);
-  const [usernameTooShortError, setusernameTooShortError] = useState(false);
+  const [disableLogin, setDisableLogin] = useState(true);
+  const [animationValue, setAnimationValue] = useState(0);
 
   // Could've defined a single useState() called "error", but then it wouldn't
   // be possible to stack these messages together.
@@ -76,98 +75,110 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
     };
   }, []);
 
-  const validateData = (username: string, password: string): void => {
-    let valid = true;
-
-    if (password !== confirmPassword) {
-      setpasswordDoesNotMatchError(true);
-      valid = false;
-    }
-    if (password.length < 8) {
-      setpasswordTooShortError(true);
-      valid = false;
-    }
-    if (username.length < 5) {
-      setusernameTooShortError(true);
-      valid = false;
-    }
-    if (valid) {
-      register({ variables: { username, password } });
-      setpasswordDoesNotMatchError(false);
-      setpasswordTooShortError(false);
-      setusernameTooShortError(false);
-      // Reset those, otherwise they'd remain there!
+  const validateData = (): void => {
+    if (username.length < 5 || password.length < 8) {
+      setDisableLogin(true);
+    } else {
+      setDisableLogin(false);
     }
   };
 
+  const startAnimation = () => {
+    setAnimationValue((prevState) => prevState + 1);
+  };
+
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      style={styles.container}
+      source={require("../../assets/images/LoginBackground2.png")}
+    >
       <View
         style={
           keyboardActive
-            ? { ...styles.subContainer, flex: 0.95 }
+            ? { ...styles.subContainer, flex: 0.9 }
             : styles.subContainer
         }
       >
-        <PrimaryText
-          style={keyboardActive ? { display: "none" } : styles.title}
-        >
+        <PrimaryText style={styles.title} variant={"bold"}>
           Register
         </PrimaryText>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="md-person"
-            size={24}
-            style={styles.inputIcon}
-            color={colors.lightGray}
-          />
-          <TextInput
-            value={username}
-            onChangeText={(username) => setUsername(username)}
-            placeholder={"Create a user"}
-            style={styles.input}
-            maxLength={20}
-          />
-        </View>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="md-lock"
-            size={24}
-            style={styles.inputIcon}
-            color={colors.lightGray}
-          />
-          <TextInput
-            value={password}
-            onChangeText={(password) => setPassword(password)}
-            placeholder={"Set your password"}
-            secureTextEntry={true}
-            style={styles.input}
-            maxLength={20}
-          />
-        </View>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="md-lock"
-            size={24}
-            style={styles.inputIcon}
-            color={colors.lightGray}
-          />
-          <TextInput
-            value={confirmPassword}
-            onChangeText={(text) => setConfirmPassword(text)}
-            placeholder={"Confirm your password"}
-            secureTextEntry={true}
-            style={styles.input}
-            maxLength={20}
-          />
-        </View>
+        <Shake value={animationValue} type="timing" useNativeDriver={true}>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="md-person"
+              size={24}
+              style={styles.inputIcon}
+              color={colors.lightGray}
+            />
+            <TextInput
+              value={username}
+              onChangeText={(username) => {
+                setUsername(username);
+                validateData();
+              }}
+              placeholder={"Create a user"}
+              style={styles.input}
+              maxLength={20}
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="md-lock"
+              size={24}
+              style={styles.inputIcon}
+              color={colors.lightGray}
+            />
+            <TextInput
+              value={password}
+              onChangeText={(password) => {
+                setPassword(password);
+                validateData();
+                console.log(disableLogin);
+                password === confirmPassword && disableLogin
+                  ? setDisableLogin(false)
+                  : setDisableLogin(true);
+              }}
+              placeholder={"Set your password"}
+              secureTextEntry={true}
+              style={styles.input}
+              maxLength={20}
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="md-lock"
+              size={24}
+              style={styles.inputIcon}
+              color={colors.lightGray}
+            />
+            <TextInput
+              value={confirmPassword}
+              onChangeText={(text) => {
+                setConfirmPassword(text);
+                text === password && disableLogin
+                  ? setDisableLogin(false)
+                  : setDisableLogin(true);
+              }}
+              placeholder={"Confirm your password"}
+              secureTextEntry={true}
+              style={styles.input}
+              maxLength={20}
+            />
+          </View>
+        </Shake>
         <TouchableOpacity
-          style={styles.button}
+          style={
+            disableLogin || validating ? styles.buttonDisabled : styles.button
+          }
+          disabled={disableLogin || validating}
           onPress={() => {
-            validateData(username, password);
+            register({ variables: { username, password } });
           }}
         >
-          <PrimaryText>
+          <PrimaryText
+            style={{ color: "white", letterSpacing: 1.2 }}
+            variant={"bold"}
+          >
             {validating || logging ? "REGISTERING..." : "REGISTER"}
           </PrimaryText>
         </TouchableOpacity>
@@ -176,23 +187,8 @@ const Register: FunctionComponent<RegisterProps> = ({ navigation }) => {
             This username is not available
           </PrimaryText>
         )}
-        {passwordDoesNotMatchError && (
-          <PrimaryText style={styles.invalidMsg}>
-            Passwords don't match
-          </PrimaryText>
-        )}
-        {passwordTooShortError && (
-          <PrimaryText style={styles.invalidMsg}>
-            Password must have at least 8 characters
-          </PrimaryText>
-        )}
-        {usernameTooShortError && (
-          <PrimaryText style={styles.invalidMsg}>
-            Username must have at least 6 characters
-          </PrimaryText>
-        )}
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -201,76 +197,58 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.purple,
+    backgroundColor: "white",
   },
   subContainer: {
     flex: 0.7,
     width: "90%",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
-    backgroundColor: colors.iceWhite,
-    borderColor: colors.purple,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-
-    elevation: 8,
+    backgroundColor: "white",
+    borderRadius: 5,
+    ...shadows.lightShadow,
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.iceWhite,
+    backgroundColor: colors.darkerWhite,
     paddingLeft: 10,
     paddingRight: 10,
     padding: 5,
     margin: 5,
     marginBottom: 10,
-    shadowColor: "#000",
-    borderRadius: 25,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 5,
   },
   input: {
     width: 200,
     height: 44,
     padding: 10,
-    borderColor: colors.iceWhite,
-    backgroundColor: colors.iceWhite,
-    borderRadius: 10,
+    borderColor: "white",
+    backgroundColor: colors.darkerWhite,
   },
   inputIcon: {
     marginLeft: 3,
     marginBottom: 1,
   },
   button: {
-    backgroundColor: colors.iceWhite,
-    padding: 10,
+    backgroundColor: colors.purple,
+    width: 200,
+    alignItems: "center",
     marginTop: 10,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    padding: 12.5,
+    borderRadius: 25,
+  },
+  buttonDisabled: {
+    backgroundColor: colors.lightGray,
+    width: 200,
+    alignItems: "center",
+    marginTop: 10,
+    padding: 12.5,
+    borderRadius: 20,
   },
   title: {
-    color: colors.textColor,
-    fontWeight: "700",
-    fontSize: 42,
+    color: colors.purple,
+    fontSize: 38,
     marginBottom: 10,
     textAlign: "center",
   },

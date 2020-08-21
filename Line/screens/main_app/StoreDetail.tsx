@@ -1,4 +1,9 @@
-import React, { useState, useEffect, FunctionComponent } from "react";
+import React, {
+  useState,
+  useEffect,
+  FunctionComponent,
+  useContext,
+} from "react";
 
 import {
   StyleSheet,
@@ -26,6 +31,7 @@ import LottieView from "lottie-react-native";
 
 import { TurnInterface } from "../../typescript/Interfaces";
 import { StoreDetailProps } from "../../typescript/Types";
+import { HeaderOptions } from "../../context/HeaderOptions";
 
 const parseOpeningDays = (openingDays: string): string => {
   // Some ugly string parsing...
@@ -75,9 +81,10 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
     }
   );
 
-  const [userId, setUserId] = useState<null | string>(null);
-
   const [draggableShouldWork, setDraggableShouldWork] = useState(true);
+  const { setHeaderOptions } = useContext(HeaderOptions);
+
+  const [userId, setUserId] = useState<null | string>(null);
 
   const getUserId = async () => {
     await AsyncStorage.getItem("USER_ID").then((id) => setUserId(id));
@@ -130,6 +137,7 @@ const StoreDetail: FunctionComponent<StoreDetailProps> = ({
         </View>
       </ImageBackground>
       <Draggable
+        imageSource={require("../../assets/images/LoginBackground.png")}
         disabled={!draggableShouldWork}
         x={0}
         maxX={0}

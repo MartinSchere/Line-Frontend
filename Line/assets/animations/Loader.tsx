@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   loader: {
-    maxWidth: 120,
-    maxHeight: 120,
+    maxWidth: 100,
+    maxHeight: 100,
   },
 });
 

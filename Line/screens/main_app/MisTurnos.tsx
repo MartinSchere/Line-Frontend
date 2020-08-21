@@ -72,7 +72,7 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
         {validating && (
           <ActivityIndicator
             size={40}
-            color={colors.lightBlue}
+            color={colors.warning}
             style={styles.turnCancelLoader}
           />
         )}
@@ -90,7 +90,9 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
               </PrimaryText>
             </View>
           ) : (
-            <PrimaryText style={styles.bigText}>It's your turn</PrimaryText>
+            <PrimaryText style={styles.bigText} variant={"bold"}>
+              It's your turn
+            </PrimaryText>
           )}
         </View>
       </View>
@@ -169,18 +171,18 @@ const Turnos: FunctionComponent<TurnosProps> = ({ navigation }) => {
               <PrimaryText
                 style={{
                   fontSize: 30,
-                  fontWeight: "700",
                   color: colors.textColor,
                 }}
+                variant={"bold"}
               >
                 Join a queue to start
               </PrimaryText>
               <PrimaryText
                 style={{
                   fontSize: 14,
-                  fontWeight: "700",
                   color: colors.iconColor,
                 }}
+                variant={"bold"}
               >
                 or swipe down to refresh
               </PrimaryText>
@@ -231,6 +233,7 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontSize: 36,
+    color: colors.textColor,
   },
   title: {
     fontSize: 16,

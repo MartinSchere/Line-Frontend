@@ -5,7 +5,7 @@ import { View, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import PrimaryText from "../../assets/styling/PrimaryText";
-import colors from "../../assets/styling/Colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 
 import DaySelector from "../../components/DaySelector";
 
@@ -69,13 +69,15 @@ const ScheduleSelect: FunctionComponent<ScheduleSelectProps> = ({
   return (
     <View>
       <View style={styles.container}>
-        <PrimaryText style={styles.title}>
+        <PrimaryText style={styles.title} variant={"bold"}>
           You'll recieve customers in these hours:
         </PrimaryText>
         <View style={styles.cardHolder}>
           <View style={styles.card}>
             <View style={styles.timeHelper}>
-              <PrimaryText style={styles.centeredText}>From</PrimaryText>
+              <PrimaryText style={styles.centeredText} variant={"bold"}>
+                From
+              </PrimaryText>
             </View>
             {time1 && (
               <TouchableOpacity onPress={show1}>
@@ -109,7 +111,9 @@ const ScheduleSelect: FunctionComponent<ScheduleSelectProps> = ({
           <PrimaryText style={styles.hyphen}>-</PrimaryText>
           <View style={styles.card}>
             <View style={styles.timeHelper}>
-              <PrimaryText style={styles.centeredText}>To</PrimaryText>
+              <PrimaryText style={styles.centeredText} variant={"bold"}>
+                To
+              </PrimaryText>
             </View>
             {time2 && (
               <TouchableOpacity onPress={show2}>
@@ -146,7 +150,10 @@ const ScheduleSelect: FunctionComponent<ScheduleSelectProps> = ({
             Please select a valid time spectrum
           </PrimaryText>
         )}
-        <PrimaryText style={{ margin: 5 }}> Days: </PrimaryText>
+        <PrimaryText style={{ margin: 5 }} variant={"bold"}>
+          {" "}
+          Days:{" "}
+        </PrimaryText>
         <View style={styles.card}>
           <DaySelector
             onChange={useCallback((days) => {
@@ -174,11 +181,15 @@ const ScheduleSelect: FunctionComponent<ScheduleSelectProps> = ({
               });
             }}
           >
-            <PrimaryText style={styles.registerBtnText}>REGISTER</PrimaryText>
+            <PrimaryText style={styles.registerBtnText} variant={"bold"}>
+              REGISTER
+            </PrimaryText>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={styles.disabledButton} disabled={true}>
-            <PrimaryText style={styles.registerBtnText}>REGISTER</PrimaryText>
+            <PrimaryText style={styles.registerBtnText} variant={"bold"}>
+              REGISTER
+            </PrimaryText>
           </TouchableOpacity>
         )}
       </View>
@@ -276,6 +287,7 @@ const styles = StyleSheet.create({
   },
   registerBtnText: {
     color: colors.iceWhite,
+    padding: 3,
   },
 });
 

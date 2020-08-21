@@ -4,54 +4,29 @@ import * as SecureStore from "expo-secure-store";
 import { useMutation } from "@apollo/react-hooks";
 import { LOGIN } from "../../graphql/Mutations";
 
-import { Animated, TextInput, View, StyleSheet, Keyboard } from "react-native";
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Keyboard,
+  ImageBackground,
+} from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { Shake } from "react-native-motion";
 
 import { Ionicons } from "@expo/vector-icons";
 import Logo from "../../assets/Logo";
-import colors from "../../assets/styling/Colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 import PrimaryText from "../../assets/styling/PrimaryText";
 
-import { FadeInViewProps, LoginProps } from "../../typescript/Types";
-const FadeInView: FunctionComponent<FadeInViewProps> = ({
-  children,
-  style,
-}) => {
-  const [fadeAnim] = useState(new Animated.Value(0)); // Initial value for opacity: 0
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-    }).start();
-  }, []);
-
-  const passedStyles = Array.isArray(style)
-    ? Object.assign({}, ...style)
-    : style;
-
-  return (
-    <Animated.View // Special animatable View
-      style={[
-        {
-          ...passedStyles,
-        },
-        {
-          opacity: fadeAnim, // Bind opacity to animated value
-        },
-      ]}
-    >
-      {children}
-    </Animated.View>
-  );
-};
+import { LoginProps } from "../../typescript/Types";
 
 const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
   const [
     login,
     { loading: validating, error: validationError, data: returnData },
   ] = useMutation(LOGIN, {
-    onError: () => {},
+    onError: () => startAnimation(),
     onCompleted: (data) => {
       (async () => {
         await SecureStore.setItemAsync("LOGIN_TOKEN", data.tokenAuth.token);
@@ -67,15 +42,19 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [errorAlert, setErrorAlert] = useState(false);
+  const [disableLogin, setDisableLogin] = useState(true);
+  const [animationValue, setAnimationValue] = useState(0);
 
   const [keyboardActive, setKeyboardActive] = useState(false);
 
-  const handleLogin = (username: string, password: string): void => {
-    if (password.length < 4) {
-      setErrorAlert(true);
+  const startAnimation = () => {
+    setAnimationValue((prevState) => prevState + 1);
+  };
+  const validateLogin = (): void => {
+    if (password.length > 4 && username.length > 1) {
+      setDisableLogin(false);
     } else {
-      login({ variables: { username: username, password: password } });
+      setDisableLogin(true);
     }
   };
 
@@ -99,93 +78,94 @@ const Login: FunctionComponent<LoginProps> = ({ route, navigation }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      style={styles.container}
+      source={require("../../assets/images/LoginBackground.png")}
+    >
       <View
         style={
           keyboardActive
-            ? { ...styles.subContainer, flex: 0.9 }
+            ? { ...styles.subContainer, flex: 0.8 }
             : styles.subContainer
         }
       >
-        {messageText && !keyboardActive && (
-          <FadeInView style={styles.notification}>
+        <Logo style={styles.logo} />
+        <Shake value={animationValue} type="timing" useNativeDriver={true}>
+          <View style={styles.inputWrapper}>
             <Ionicons
-              name="md-checkbox"
-              size={45}
-              style={styles.successIcon}
-              color={colors.successColor}
+              name="md-basket"
+              size={24}
+              style={styles.inputIcon}
+              color={colors.lightGray}
             />
-            <PrimaryText style={styles.message}>{messageText}</PrimaryText>
-          </FadeInView>
-        )}
-        {!messageText && (
-          <>
-            <Logo style={styles.logo} />
-            <PrimaryText style={styles.subtitle}>for sellers</PrimaryText>
-          </>
-        )}
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="md-basket"
-            size={24}
-            style={styles.inputIcon}
-            color={colors.lightGray}
-          />
-          <TextInput
-            value={username}
-            onChangeText={(username) => setUsername(username)}
-            placeholder={"Name of the store"}
-            style={styles.input}
-            maxLength={20}
-          />
-        </View>
-        <View style={styles.inputWrapper}>
-          <Ionicons
-            name="md-lock"
-            size={24}
-            style={styles.inputIcon}
-            color={colors.lightGray}
-          />
-          <TextInput
-            value={password}
-            onChangeText={(password) => setPassword(password)}
-            placeholder={"Password"}
-            secureTextEntry={true}
-            style={styles.input}
-            maxLength={20}
-          />
-        </View>
+            <TextInput
+              value={username}
+              onChangeText={(username) => {
+                setUsername(username);
+                validateLogin();
+              }}
+              placeholder={"Name of the store"}
+              style={styles.input}
+              maxLength={20}
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="md-lock"
+              size={24}
+              style={styles.inputIcon}
+              color={colors.lightGray}
+            />
+            <TextInput
+              value={password}
+              onChangeText={(password) => {
+                setPassword(password);
+                validateLogin();
+              }}
+              placeholder={"Password"}
+              secureTextEntry={true}
+              style={styles.input}
+              maxLength={20}
+            />
+          </View>
+        </Shake>
 
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleLogin(username, password)}
+          style={
+            disableLogin || validating ? styles.buttonDisabled : styles.button
+          }
+          onPress={() => {
+            login({
+              variables: {
+                username,
+                password,
+              },
+            });
+          }}
+          disabled={disableLogin}
         >
-          <PrimaryText>{validating ? "LOGGING IN..." : "LOGIN"}</PrimaryText>
-        </TouchableOpacity>
-        <View style={styles.register}>
-          <PrimaryText style={styles.registerLinkHelper}>
-            Don't have an account?
+          <PrimaryText style={{ color: "white" }} variant={"bold"}>
+            {validating ? "Logging in..." : "LOG IN"}
           </PrimaryText>
+        </TouchableOpacity>
+        <PrimaryText
+          variant={"bold"}
+          style={{ color: colors.iconColor, padding: "3%" }}
+        >
+          or
+        </PrimaryText>
+        <View style={styles.register}>
           <TouchableOpacity
             style={styles.registerTouchable}
             onPress={() => navigation.navigate("Register")}
           >
-            <PrimaryText style={styles.registerLink}>Sign up</PrimaryText>
+            <PrimaryText style={styles.registerLinkUnderlined} variant={"bold"}>
+              Create an account
+            </PrimaryText>
           </TouchableOpacity>
         </View>
-        <View
-          style={
-            validationError || errorAlert
-              ? styles.errorTextActive
-              : styles.errorText
-          }
-        >
-          <PrimaryText style={styles.invalidMsg}>
-            Invalid credentials
-          </PrimaryText>
-        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -194,61 +174,48 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.purple,
   },
   subContainer: {
     flex: 0.7,
     width: "90%",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
-    backgroundColor: colors.iceWhite,
-    borderColor: colors.purple,
-    borderRadius: 15,
+    backgroundColor: "white",
+    borderRadius: 5,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
-
-    elevation: 8,
+    elevation: 5,
   },
   logo: {
-    width: "30%",
-    height: "15%",
+    width: "100%",
+    height: "10%",
+    marginBottom: 30,
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.iceWhite,
+    backgroundColor: colors.darkerWhite,
     paddingLeft: 10,
     paddingRight: 10,
     padding: 5,
     margin: 5,
     marginBottom: 10,
-    shadowColor: "#000",
-    borderRadius: 25,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 5,
   },
   input: {
     width: 200,
     height: 44,
     padding: 10,
-    borderWidth: 1,
-    borderColor: colors.iceWhite,
-    backgroundColor: colors.iceWhite,
+    borderColor: "white",
+    backgroundColor: colors.darkerWhite,
   },
   inputIcon: {
-    marginLeft: 3,
-    marginBottom: 1,
+    marginLeft: 7,
   },
   subtitle: {
     color: colors.textColor,
@@ -263,49 +230,42 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   button: {
-    backgroundColor: colors.iceWhite,
-    padding: 10,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: colors.purple,
+    width: 200,
+    alignItems: "center",
+    marginTop: 10,
+    padding: 12.5,
+    borderRadius: 25,
+  },
+  buttonDisabled: {
+    backgroundColor: colors.lightGray,
+    width: 200,
+    alignItems: "center",
+    marginTop: 10,
+    padding: 12.5,
+    borderRadius: 20,
   },
   register: {
-    marginTop: 15,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
   },
   registerTouchable: {},
+  welcomeMsg: {
+    fontWeight: "700",
+    color: colors.textColor,
+    fontSize: 30,
+    margin: 10,
+    textAlign: "center",
+  },
   registerLink: {
+    color: colors.textColor,
+    margin: 5,
+  },
+  registerLinkUnderlined: {
     color: colors.purple,
     textDecorationLine: "underline",
-    textAlign: "center",
-    fontWeight: "700",
-  },
-  registerLinkHelper: {
-    color: colors.textColor,
-    marginRight: 5,
-  },
-  notification: {
-    marginBottom: 15,
-    width: "60%",
-    backgroundColor: colors.iceWhite,
-    padding: 3,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
+    opacity: 0.8,
   },
   successIcon: {
     marginTop: 10,

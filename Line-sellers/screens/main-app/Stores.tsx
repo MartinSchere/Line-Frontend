@@ -17,7 +17,7 @@ import { MODIFY_STORE } from "../../graphql/Mutations";
 
 import Loader from "../../assets/animations/Loader";
 import PrimaryText from "../../assets/styling/PrimaryText";
-import colors from "../../assets/styling/Colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 import { Ionicons } from "@expo/vector-icons";
 
 import { StoresProps } from "../../typescript/Types";
@@ -72,7 +72,9 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.buttonWrapper}>
         <TouchableOpacity style={styles.logout} onPress={() => _handleLogout()}>
-          <PrimaryText style={styles.logoutBtnText}>Log out</PrimaryText>
+          <PrimaryText style={styles.logoutBtnText} variant={"bold"}>
+            Log out
+          </PrimaryText>
           <Ionicons
             style={styles.logoutIcon}
             name="md-exit"
@@ -84,12 +86,15 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
       <View style={styles.userInfoContainer}>
         <Ionicons name="md-basket" size={70} color={colors.iconColor} />
         <TextInput
-          defaultValue={data.store.properties.name}
           placeholder={"Name of the store"}
           style={styles.storeName}
           onChangeText={(text) => setNewUsername(text)}
           maxLength={20}
-        ></TextInput>
+        >
+          <PrimaryText style={{ fontSize: 30 }} variant={"bold"}>
+            {data.store.properties.name}
+          </PrimaryText>
+        </TextInput>
         {data.store.properties.averageWaitTime && (
           <PrimaryText
             style={{ marginTop: 15, fontSize: 20, color: colors.iconColor }}
@@ -107,14 +112,20 @@ const Stores: FunctionComponent<StoresProps> = ({ navigation }) => {
                 modifyStore({ variables: { newName: newUsername } });
               }}
             >
+              <PrimaryText style={styles.saveButtonText} variant={"bold"}>
+                SAVE CHANGES
+              </PrimaryText>
               <PrimaryText style={styles.saveButtonText}>
-                {"SAVE CHANGES \n(LOGIN REQUIRED)"}
+                LOGIN REQUIRED
               </PrimaryText>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.saveButtonDisabled} disabled={true}>
+              <PrimaryText style={styles.saveButtonText} variant={"bold"}>
+                SAVE CHANGES
+              </PrimaryText>
               <PrimaryText style={styles.saveButtonText}>
-                {"SAVE CHANGES \n(LOGIN REQUIRED)"}
+                LOGIN REQUIRED
               </PrimaryText>
             </TouchableOpacity>
           ))}
@@ -216,7 +227,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: colors.iceWhite,
   },
-  logoutBtnText: {},
+  logoutBtnText: {
+    color: colors.iconColor,
+  },
 });
 
 export default Stores;

@@ -14,7 +14,7 @@ import { FETCH_FULLFILLED_TURNS } from "../../graphql/Queries";
 
 import { Ionicons } from "@expo/vector-icons";
 import PrimaryText from "../../assets/styling/PrimaryText";
-import colors from "../../assets/styling/Colors";
+import { colors } from "../../assets/styling/ConstantStyles";
 import Loader from "../../assets/animations/Loader";
 
 import { TurnInterface } from "../../typescript/Interfaces";
@@ -25,7 +25,7 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
     <View style={styles.turnCard}>
       <View style={styles.cardInfo}>
         <View style={styles.turnInfo}>
-          <PrimaryText style={{ fontSize: 24 }}>
+          <PrimaryText style={{ fontSize: 24 }} variant={"bold"}>
             {props.userFullName}
           </PrimaryText>
           <PrimaryText>Created at {props.creationTime.slice(0, 5)}</PrimaryText>
@@ -51,7 +51,7 @@ const Turno: FunctionComponent<TurnoProps> = (props) => {
         )}
         {props.userDidNotPresent && (
           <View style={styles.status}>
-            <PrimaryText style={{ color: colors.yellow }}>
+            <PrimaryText style={{ color: "yellow" }}>
               User did not present
             </PrimaryText>
           </View>
@@ -106,18 +106,18 @@ const TurnHistory: FunctionComponent<TurnHistoryProps> = ({ navigation }) => {
             <PrimaryText
               style={{
                 fontSize: 24,
-                fontWeight: "700",
                 color: colors.textColor,
               }}
+              variant={"bold"}
             >
               There's nobody here yet...
             </PrimaryText>
             <PrimaryText
               style={{
                 fontSize: 12,
-                fontWeight: "700",
                 color: colors.iconColor,
               }}
+              variant={"bold"}
             >
               swipe down to refresh
             </PrimaryText>

@@ -13,10 +13,11 @@ import {
   StyleSheet,
   AsyncStorage,
   Keyboard,
+  ImageBackground,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
-import { colors, shadows } from "../../assets/styling/ConstantStyles";
+import { colors } from "../../assets/styling/ConstantStyles";
 import PrimaryText from "../../assets/styling/PrimaryText";
 import Logo from "../../assets/Logo";
 
@@ -43,14 +44,10 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [keyboardActive, setKeyboardActive] = useState(false);
-
   const [disableLogin, setDisableLogin] = useState(true);
   const [animationValue, setAnimationValue] = useState(0);
 
-  const startAnimation = () => {
-    setAnimationValue((prevState) => prevState + 1);
-  };
+  const [keyboardActive, setKeyboardActive] = useState(false);
 
   useEffect(() => {
     Keyboard.addListener("keyboardDidShow", () => {
@@ -71,6 +68,10 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
     };
   }, []);
 
+  const startAnimation = () => {
+    setAnimationValue((prevState) => prevState + 1);
+  };
+
   const validateLogin = (): void => {
     if (password.length > 5 && username.length > 1) {
       setDisableLogin(false);
@@ -80,7 +81,10 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      style={styles.container}
+      source={require("../../assets/images/LoginBackground2.png")}
+    >
       <View
         style={
           keyboardActive
@@ -149,7 +153,12 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
             {validating ? "Logging in..." : "LOG IN"}
           </PrimaryText>
         </TouchableOpacity>
-
+        <PrimaryText
+          variant={"bold"}
+          style={{ color: colors.iconColor, padding: "3%" }}
+        >
+          or
+        </PrimaryText>
         <View style={styles.register}>
           <TouchableOpacity
             style={styles.registerTouchable}
@@ -160,11 +169,8 @@ const Login: FunctionComponent<LoginProps> = ({ navigation }) => {
             </PrimaryText>
           </TouchableOpacity>
         </View>
-        <View
-          style={validationError ? styles.errorTextActive : styles.errorText}
-        ></View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -173,6 +179,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#EDF5F8",
   },
   subContainer: {
     flex: 0.7,
@@ -191,8 +198,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   logo: {
-    width: "30%",
-    height: "30%",
+    width: "100%",
+    height: "10%",
+    marginBottom: 30,
   },
   inputWrapper: {
     flexDirection: "row",
@@ -235,33 +243,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 25,
   },
   registerTouchable: {},
-  notification: {
-    marginBottom: 15,
-    width: "60%",
-    backgroundColor: colors.iceWhite,
-    padding: 3,
-    borderRadius: 10,
-    ...shadows.lightShadow,
-  },
   welcomeMsg: {
     fontWeight: "700",
     color: colors.textColor,
     fontSize: 30,
     margin: 10,
     textAlign: "center",
-  },
-  message: {
-    color: colors.iconColor,
-    fontSize: 18,
-    margin: 10,
-    textAlign: "center",
-  },
-  invalidMsg: {
-    color: colors.textColor,
-    margin: 10,
   },
   registerLink: {
     color: colors.textColor,
@@ -271,17 +260,6 @@ const styles = StyleSheet.create({
     color: colors.purple,
     textDecorationLine: "underline",
     opacity: 0.8,
-    marginTop: 15,
-  },
-  successIcon: {
-    marginTop: 10,
-    alignSelf: "center",
-  },
-  errorText: {
-    display: "none",
-  },
-  errorTextActive: {
-    display: "flex",
   },
 });
 

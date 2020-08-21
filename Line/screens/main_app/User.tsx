@@ -57,7 +57,9 @@ const User: FunctionComponent<UserProps> = ({ navigation }) => {
           style={styles.logout}
           onPress={() => _handleLogout().then(() => client.clearStore())}
         >
-          <PrimaryText style={styles.exitBtn}>Log out</PrimaryText>
+          <PrimaryText style={styles.exitBtn} variant={"bold"}>
+            Log out
+          </PrimaryText>
           <Ionicons
             style={styles.logoutIcon}
             name="md-exit"
@@ -68,12 +70,13 @@ const User: FunctionComponent<UserProps> = ({ navigation }) => {
         <View style={styles.userInfoContainer}>
           <Ionicons name="md-person" size={70} color={colors.iconColor} />
           <TextInput
-            defaultValue={data.user.fullName}
             placeholder={"Username"}
             style={styles.userName}
             onChangeText={(text) => setNewUsername(text)}
             maxLength={20}
-          ></TextInput>
+          >
+            <PrimaryText variant={"bold"}>{data.user.fullName}</PrimaryText>
+          </TextInput>
         </View>
         <View style={styles.saveButtonWrapper}>
           {!validating &&
@@ -84,7 +87,7 @@ const User: FunctionComponent<UserProps> = ({ navigation }) => {
                   modifyUser({ variables: { newName: newUsername } })
                 }
               >
-                <PrimaryText style={styles.saveButtonText}>
+                <PrimaryText style={styles.saveButtonText} variant={"bold"}>
                   SAVE CHANGES
                 </PrimaryText>
                 <PrimaryText style={styles.saveButtonText}>
@@ -96,7 +99,10 @@ const User: FunctionComponent<UserProps> = ({ navigation }) => {
                 style={styles.saveButtonDisabled}
                 disabled={true}
               >
-                <PrimaryText style={styles.saveButtonTextDisabled}>
+                <PrimaryText
+                  style={styles.saveButtonTextDisabled}
+                  variant={"bold"}
+                >
                   SAVE CHANGES
                 </PrimaryText>
                 <PrimaryText style={styles.saveButtonTextDisabled}>
@@ -145,6 +151,8 @@ const styles = StyleSheet.create({
   userName: {
     color: colors.textColor,
     padding: 5,
+    paddingLeft: 20,
+    paddingRight: 20,
     backgroundColor: colors.iceWhite,
     borderRadius: 10,
     fontSize: 30,
@@ -201,12 +209,12 @@ const styles = StyleSheet.create({
   },
   logoutIcon: {
     marginLeft: 4,
-    marginTop: 5,
   },
   username: {
     fontSize: 30,
   },
   exitBtn: {
+    color: colors.iconColor,
     margin: 5,
   },
 });
